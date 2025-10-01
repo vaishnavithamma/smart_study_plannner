@@ -106,6 +106,36 @@ function renderAll() {
 function scrollToSection(id) {
   document.getElementById(id).scrollIntoView({ behavior: "smooth" });
 }
+// Dummy user (for demo only)
+const demoUser = {
+  username: "student",
+  password: "1234"
+};
+
+// Login handler
+document.getElementById("loginForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+  
+  if(user === demoUser.username && pass === demoUser.password) {
+    localStorage.setItem("loggedIn", "true"); // save login status
+    document.getElementById("login-msg").textContent = "Login successful!";
+    document.getElementById("login-container").style.display = "none";
+    document.getElementById("app-container").style.display = "block";
+  } else {
+    document.getElementById("login-msg").textContent = "Invalid username or password!";
+  }
+});
+
+// Check login on page load
+window.onload = function() {
+  if(localStorage.getItem("loggedIn") === "true") {
+    document.getElementById("login-container").style.display = "none";
+    document.getElementById("app-container").style.display = "block";
+  }
+};
 
 // Initial Load
 renderAll();
