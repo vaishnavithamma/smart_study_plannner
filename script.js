@@ -16,11 +16,11 @@ const scheduleBox = document.getElementById("scheduleBox");
 const timelineBox = document.getElementById("timelineBox");
 const progressFill = document.getElementById("progressFill");
 
-// ===== Dummy User =====
-const demoUser = {
-  username: "student",
-  password: "1234"
-};
+// ===== Allowed Users =====
+const users = [
+  { username: "student", password: "1234" },
+  { username: "mentor", password: "4321" }
+];
 
 // ===== Tasks =====
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
@@ -29,16 +29,19 @@ let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 loginForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const user = usernameInput.value.trim();
+  const user = usernameInput.value.trim().toLowerCase(); // ignore case for username
   const pass = passwordInput.value.trim();
 
-  if (user === demoUser.username && pass === demoUser.password) {
+  const validUser = users.find(u => u.username.toLowerCase() === user && u.password === pass);
+
+  if(validUser) {
     localStorage.setItem("loggedIn", "true");
-    loginMsg.textContent = "Login successful!";
+    localStorage.setItem("currentUser", validUser.username); // optional: store current user
+    loginMsg.textContent = `Login successful! Welcome, ${validUser.username}.`;
     loginContainer.style.display = "none";
     appContainer.style.display = "block";
 
-    renderAll(); // render tasks only after login
+    renderAll();
   } else {
     loginMsg.textContent = "Invalid username or password!";
   }
@@ -47,13 +50,14 @@ loginForm.addEventListener("submit", (e) => {
 // ===== Logout Handler =====
 logoutBtn.addEventListener("click", () => {
   localStorage.removeItem("loggedIn");
+  localStorage.removeItem("currentUser");
   loginContainer.style.display = "block";
   appContainer.style.display = "none";
 });
 
 // ===== Check login on page load =====
 window.addEventListener("load", () => {
-  if (localStorage.getItem("loggedIn") === "true") {
+  if(localStorage.getItem("loggedIn") === "true") {
     loginContainer.style.display = "none";
     appContainer.style.display = "block";
     renderAll();
@@ -68,7 +72,7 @@ taskForm.addEventListener("submit", (e) => {
   const deadline = deadlineInput.value;
   const priority = priorityInput.value;
 
-  if (!subject || !deadline) return;
+  if(!subject || !deadline) return;
 
   const task = { subject, deadline, priority, completed: false };
   tasks.push(task);
@@ -82,7 +86,7 @@ taskForm.addEventListener("submit", (e) => {
 // ===== Render Task List =====
 function renderTasks() {
   taskList.innerHTML = "";
-  if (tasks.length === 0) return;
+  if(tasks.length === 0) return;
 
   tasks.forEach((task, index) => {
     const li = document.createElement("li");
@@ -110,41 +114,37 @@ function toggleComplete(index) {
 
 // ===== Render Schedule =====
 function renderSchedule() {
-  if (tasks.length === 0) {
+  if(tasks.length === 0) {
     scheduleBox.innerHTML = "<p>No tasks yet. Add some above!</p>";
     return;
   }
 
   scheduleBox.innerHTML = tasks
-    .map(
-      (t) => `<p>📖 <strong>${t.subject}</strong> due <em>${t.deadline}</em> (${t.priority})</p>`
-    )
+    .map(t => `<p>📖 <strong>${t.subject}</strong> due <em>${t.deadline}</em> (${t.priority})</p>`)
     .join("");
 }
 
 // ===== Render Timeline =====
 function renderTimeline() {
-  if (tasks.length === 0) {
+  if(tasks.length === 0) {
     timelineBox.innerHTML = "<p>No tasks yet!</p>";
     return;
   }
 
   timelineBox.innerHTML = tasks
-    .map(
-      (t) => `<p>${t.deadline}<br><strong>${t.subject}</strong><br><em>${t.priority}</em></p>`
-    )
+    .map(t => `<p>${t.deadline}<br><strong>${t.subject}</strong><br><em>${t.priority}</em></p>`)
     .join("");
 }
 
 // ===== Update Progress =====
 function updateProgress() {
-  if (tasks.length === 0) {
+  if(tasks.length === 0) {
     progressFill.style.width = "0%";
     progressFill.textContent = "0%";
     return;
   }
 
-  const completed = tasks.filter((t) => t.completed).length;
+  const completed = tasks.filter(t => t.completed).length;
   const percent = Math.round((completed / tasks.length) * 100);
 
   progressFill.style.width = percent + "%";
@@ -167,7 +167,7 @@ function renderAll() {
 // ===== Smooth Scroll =====
 function scrollToSection(id) {
   const section = document.getElementById(id);
-  if (section) {
+  if(section) {
     section.scrollIntoView({ behavior: "smooth" });
   }
 }
