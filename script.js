@@ -1,21 +1,77 @@
+// ===== DOM Elements =====
+const loginForm = document.getElementById("loginForm");
+const usernameInput = document.getElementById("username");
+const passwordInput = document.getElementById("password");
+const loginMsg = document.getElementById("login-msg");
+const loginContainer = document.getElementById("login-container");
+const appContainer = document.getElementById("app-container");
+const logoutBtn = document.getElementById("logoutBtn");
+
 const taskForm = document.getElementById("taskForm");
+const subjectInput = document.getElementById("subject");
+const deadlineInput = document.getElementById("deadline");
+const priorityInput = document.getElementById("priority");
 const taskList = document.getElementById("taskList");
 const scheduleBox = document.getElementById("scheduleBox");
 const timelineBox = document.getElementById("timelineBox");
 const progressFill = document.getElementById("progressFill");
 
+// ===== Dummy User =====
+const demoUser = {
+  username: "student",
+  password: "1234"
+};
+
+// ===== Tasks =====
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-// Add Task
+// ===== Login Handler =====
+loginForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const user = usernameInput.value.trim();
+  const pass = passwordInput.value.trim();
+
+  if (user === demoUser.username && pass === demoUser.password) {
+    localStorage.setItem("loggedIn", "true");
+    loginMsg.textContent = "Login successful!";
+    loginContainer.style.display = "none";
+    appContainer.style.display = "block";
+
+    renderAll(); // render tasks only after login
+  } else {
+    loginMsg.textContent = "Invalid username or password!";
+  }
+});
+
+// ===== Logout Handler =====
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("loggedIn");
+  loginContainer.style.display = "block";
+  appContainer.style.display = "none";
+});
+
+// ===== Check login on page load =====
+window.addEventListener("load", () => {
+  if (localStorage.getItem("loggedIn") === "true") {
+    loginContainer.style.display = "none";
+    appContainer.style.display = "block";
+    renderAll();
+  }
+});
+
+// ===== Add Task =====
 taskForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  const subject = document.getElementById("subject").value;
-  const deadline = document.getElementById("deadline").value;
-  const priority = document.getElementById("priority").value;
+
+  const subject = subjectInput.value.trim();
+  const deadline = deadlineInput.value;
+  const priority = priorityInput.value;
+
+  if (!subject || !deadline) return;
 
   const task = { subject, deadline, priority, completed: false };
   tasks.push(task);
-
   saveTasks();
   renderAll();
   taskForm.reset();
@@ -23,65 +79,71 @@ taskForm.addEventListener("submit", (e) => {
   alert(`Reminder set! Don't forget to study "${subject}" by ${deadline}.`);
 });
 
-// Render Task List
+// ===== Render Task List =====
 function renderTasks() {
   taskList.innerHTML = "";
+  if (tasks.length === 0) return;
+
   tasks.forEach((task, index) => {
     const li = document.createElement("li");
-    li.innerHTML = `
-      <span>
-        <strong>${task.subject}</strong> - ${task.deadline} 
-        <em>[${task.priority}]</em>
-      </span>
-      <input type="checkbox" ${task.completed ? "checked" : ""} 
-        onchange="toggleComplete(${index})">
-    `;
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = task.completed;
+    checkbox.addEventListener("change", () => toggleComplete(index));
+
+    const span = document.createElement("span");
+    span.innerHTML = `<strong>${task.subject}</strong> - ${task.deadline} <em>[${task.priority}]</em>`;
+
+    li.appendChild(span);
+    li.appendChild(checkbox);
     taskList.appendChild(li);
   });
 }
 
-// Toggle Complete
+// ===== Toggle Complete =====
 function toggleComplete(index) {
   tasks[index].completed = !tasks[index].completed;
   saveTasks();
   renderAll();
 }
 
-// Render Schedule
+// ===== Render Schedule =====
 function renderSchedule() {
   if (tasks.length === 0) {
     scheduleBox.innerHTML = "<p>No tasks yet. Add some above!</p>";
     return;
   }
+
   scheduleBox.innerHTML = tasks
     .map(
-      (t) =>
-        `<p>📖 <strong>${t.subject}</strong> due <em>${t.deadline}</em> (${t.priority})</p>`
+      (t) => `<p>📖 <strong>${t.subject}</strong> due <em>${t.deadline}</em> (${t.priority})</p>`
     )
     .join("");
 }
 
-// Render Timeline
+// ===== Render Timeline =====
 function renderTimeline() {
   if (tasks.length === 0) {
     timelineBox.innerHTML = "<p>No tasks yet!</p>";
     return;
   }
+
   timelineBox.innerHTML = tasks
     .map(
-      (t) =>
-        `<p>${t.deadline}<br><strong>${t.subject}</strong><br><em>${t.priority}</em></p>`
+      (t) => `<p>${t.deadline}<br><strong>${t.subject}</strong><br><em>${t.priority}</em></p>`
     )
     .join("");
 }
 
-// Update Progress
+// ===== Update Progress =====
 function updateProgress() {
   if (tasks.length === 0) {
     progressFill.style.width = "0%";
     progressFill.textContent = "0%";
     return;
   }
+
   const completed = tasks.filter((t) => t.completed).length;
   const percent = Math.round((completed / tasks.length) * 100);
 
@@ -89,12 +151,12 @@ function updateProgress() {
   progressFill.textContent = percent + "%";
 }
 
-// Save Tasks
+// ===== Save Tasks =====
 function saveTasks() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
-// Render Everything
+// ===== Render Everything =====
 function renderAll() {
   renderTasks();
   renderSchedule();
@@ -102,40 +164,10 @@ function renderAll() {
   updateProgress();
 }
 
-// Scroll Smooth
+// ===== Smooth Scroll =====
 function scrollToSection(id) {
-  document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+  const section = document.getElementById(id);
+  if (section) {
+    section.scrollIntoView({ behavior: "smooth" });
+  }
 }
-// Dummy user (for demo only)
-const demoUser = {
-  username: "student",
-  password: "1234"
-};
-
-// Login handler
-document.getElementById("loginForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-  
-  const user = document.getElementById("username").value;
-  const pass = document.getElementById("password").value;
-  
-  if(user === demoUser.username && pass === demoUser.password) {
-    localStorage.setItem("loggedIn", "true"); // save login status
-    document.getElementById("login-msg").textContent = "Login successful!";
-    document.getElementById("login-container").style.display = "none";
-    document.getElementById("app-container").style.display = "block";
-  } else {
-    document.getElementById("login-msg").textContent = "Invalid username or password!";
-  }
-});
-
-// Check login on page load
-window.onload = function() {
-  if(localStorage.getItem("loggedIn") === "true") {
-    document.getElementById("login-container").style.display = "none";
-    document.getElementById("app-container").style.display = "block";
-  }
-};
-
-// Initial Load
-renderAll();
