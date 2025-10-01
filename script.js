@@ -16,12 +16,6 @@ const scheduleBox = document.getElementById("scheduleBox");
 const timelineBox = document.getElementById("timelineBox");
 const progressFill = document.getElementById("progressFill");
 
-// ===== Allowed Users =====
-const users = [
-  { username: "student", password: "1234" },
-  { username: "mentor", password: "4321" }
-];
-
 // ===== Tasks =====
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
@@ -40,26 +34,26 @@ window.addEventListener("load", () => {
   }
 });
 
-// ===== Login Handler =====
+// ===== Open Login Handler =====
 loginForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const user = usernameInput.value.trim().toLowerCase();
+  const user = usernameInput.value.trim();
   const pass = passwordInput.value.trim();
 
-  const validUser = users.find(u => u.username.toLowerCase() === user && u.password === pass);
-
-  if(validUser) {
-    localStorage.setItem("loggedIn", "true");
-    localStorage.setItem("currentUser", validUser.username);
-    loginMsg.textContent = `Login successful! Welcome, ${validUser.username}.`;
-
-    loginContainer.style.display = "none";
-    appContainer.style.display = "block";
-    renderAll();
-  } else {
-    loginMsg.textContent = "Invalid username or password!";
+  if(!user || !pass) {
+    loginMsg.textContent = "Please enter a username and password!";
+    return;
   }
+
+  // Accept any username & password
+  localStorage.setItem("loggedIn", "true");
+  localStorage.setItem("currentUser", user);
+  loginMsg.textContent = `Login successful! Welcome, ${user}.`;
+
+  loginContainer.style.display = "none";
+  appContainer.style.display = "block";
+  renderAll();
 });
 
 // ===== Logout Handler =====
@@ -179,4 +173,3 @@ function scrollToSection(id) {
     section.scrollIntoView({ behavior: "smooth" });
   }
 }
-
