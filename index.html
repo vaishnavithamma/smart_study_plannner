@@ -7,66 +7,82 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Header -->
-  <header>
-    <h1>📚 Smart Study Planner</h1>
-    <nav>
-      <a href="#tasks">Tasks</a>
-      <a href="#schedule">Schedule</a>
-      <a href="#timeline">Timeline</a>
-      <a href="#progress">Progress</a>
-    </nav>
-  </header>
-
-  <!-- Hero -->
-  <section id="hero" class="hero">
-    <h2>Plan Smart. Study Better. Achieve More.</h2>
-    <p>
-      Organize your study schedules, set reminders, and track your academic goals.
-    </p>
-    <button onclick="scrollToSection('tasks')">Start Planning</button>
-  </section>
-
-  <!-- Task Input -->
-  <section id="tasks" class="tasks-section">
-    <h2>Add Study Goals</h2>
-    <form id="taskForm">
-      <input type="text" id="subject" placeholder="Subject / Task" required>
-      <input type="date" id="deadline" required>
-      <select id="priority">
-        <option value="High">High Priority</option>
-        <option value="Medium">Medium Priority</option>
-        <option value="Low">Low Priority</option>
-      </select>
-      <button type="submit">➕ Add Task</button>
+  <!-- 🔑 Login Section -->
+  <div id="login-container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="Enter Username" required>
+      <input type="password" id="password" placeholder="Enter Password" required>
+      <button type="submit">Login</button>
     </form>
-    <ul id="taskList"></ul>
-  </section>
+    <p id="login-msg"></p>
+  </div>
 
-  <!-- Schedule -->
-  <section id="schedule" class="schedule-section">
-    <h2>Study Schedule</h2>
-    <div id="scheduleBox"><p>No tasks yet. Add some above!</p></div>
-  </section>
+  <!-- 📚 App UI (Hidden until login) -->
+  <div id="app-container" style="display:none;">
+    <!-- Header -->
+    <header>
+      <h1>📚 Smart Study Planner</h1>
+      <nav>
+        <a href="#tasks">Tasks</a>
+        <a href="#schedule">Schedule</a>
+        <a href="#timeline">Timeline</a>
+        <a href="#progress">Progress</a>
+        <!-- 🚪 Logout Button -->
+        <button id="logoutBtn" style="margin-left:15px;">Logout</button>
+      </nav>
+    </header>
 
-  <!-- Timeline -->
-  <section id="timeline" class="timeline-section">
-    <h2>Visual Timeline</h2>
-    <div id="timelineBox" class="timeline"></div>
-  </section>
+    <!-- Hero -->
+    <section id="hero" class="hero">
+      <h2>Plan Smart. Study Better. Achieve More.</h2>
+      <p>
+        Organize your study schedules, set reminders, and track your academic goals.
+      </p>
+      <button onclick="scrollToSection('tasks')">Start Planning</button>
+    </section>
 
-  <!-- Progress -->
-  <section id="progress" class="progress-section">
-    <h2>Your Progress</h2>
-    <div class="progress-bar">
-      <div id="progressFill">0%</div>
-    </div>
-  </section>
+    <!-- Task Input -->
+    <section id="tasks" class="tasks-section">
+      <h2>Add Study Goals</h2>
+      <form id="taskForm">
+        <input type="text" id="subject" placeholder="Subject / Task" required>
+        <input type="date" id="deadline" required>
+        <select id="priority">
+          <option value="High">High Priority</option>
+          <option value="Medium">Medium Priority</option>
+          <option value="Low">Low Priority</option>
+        </select>
+        <button type="submit">➕ Add Task</button>
+      </form>
+      <ul id="taskList"></ul>
+    </section>
 
-  <!-- Footer -->
-  <footer>
-    <p>© 2025 Smart Study Planner | Designed with ❤️</p>
-  </footer>
+    <!-- Schedule -->
+    <section id="schedule" class="schedule-section">
+      <h2>Study Schedule</h2>
+      <div id="scheduleBox"><p>No tasks yet. Add some above!</p></div>
+    </section>
+
+    <!-- Timeline -->
+    <section id="timeline" class="timeline-section">
+      <h2>Visual Timeline</h2>
+      <div id="timelineBox" class="timeline"></div>
+    </section>
+
+    <!-- Progress -->
+    <section id="progress" class="progress-section">
+      <h2>Your Progress</h2>
+      <div class="progress-bar">
+        <div id="progressFill">0%</div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>© 2025 Smart Study Planner | Designed with ❤️</p>
+    </footer>
+  </div>
 
   <script src="script.js"></script>
 </body>
