@@ -25,22 +25,37 @@ const users = [
 // ===== Tasks =====
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
+// ===== Check login on page load =====
+window.addEventListener("load", () => {
+  const loggedIn = localStorage.getItem("loggedIn");
+  const currentUser = localStorage.getItem("currentUser");
+
+  if(loggedIn === "true" && currentUser) {
+    loginContainer.style.display = "none";
+    appContainer.style.display = "block";
+    renderAll();
+  } else {
+    loginContainer.style.display = "block";
+    appContainer.style.display = "none";
+  }
+});
+
 // ===== Login Handler =====
 loginForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  const user = usernameInput.value.trim().toLowerCase(); // ignore case for username
+  const user = usernameInput.value.trim().toLowerCase();
   const pass = passwordInput.value.trim();
 
   const validUser = users.find(u => u.username.toLowerCase() === user && u.password === pass);
 
   if(validUser) {
     localStorage.setItem("loggedIn", "true");
-    localStorage.setItem("currentUser", validUser.username); // optional: store current user
+    localStorage.setItem("currentUser", validUser.username);
     loginMsg.textContent = `Login successful! Welcome, ${validUser.username}.`;
+
     loginContainer.style.display = "none";
     appContainer.style.display = "block";
-
     renderAll();
   } else {
     loginMsg.textContent = "Invalid username or password!";
@@ -49,18 +64,11 @@ loginForm.addEventListener("submit", (e) => {
 
 // ===== Logout Handler =====
 logoutBtn.addEventListener("click", () => {
-  localStorage.removeItem("loggedIn");
-  localStorage.removeItem("currentUser");
-  loginContainer.style.display = "block";
-  appContainer.style.display = "none";
-});
-
-// ===== Check login on page load =====
-window.addEventListener("load", () => {
-  if(localStorage.getItem("loggedIn") === "true") {
-    loginContainer.style.display = "none";
-    appContainer.style.display = "block";
-    renderAll();
+  if(confirm("Are you sure you want to logout?")) {
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("currentUser");
+    loginContainer.style.display = "block";
+    appContainer.style.display = "none";
   }
 });
 
@@ -171,3 +179,4 @@ function scrollToSection(id) {
     section.scrollIntoView({ behavior: "smooth" });
   }
 }
+
